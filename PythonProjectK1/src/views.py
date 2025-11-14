@@ -2,7 +2,7 @@ import datetime
 import json
 from typing import Any, Dict
 
-from src.utils import info_kart
+from src.utils import date_filter, kart_info
 
 
 def home_page(date_times:str) ->Dict[str,Any]:
@@ -24,11 +24,13 @@ def home_page(date_times:str) ->Dict[str,Any]:
         "greetings": greetings
     }
     json_data = json.dumps(data,ensure_ascii=False, indent=4)
+    date_excel_filter= date_filter(date_times)
+    kart = kart_info(date_excel_filter)
 
-    print(date_from, date_to)
 
+    return json_data
 
-
-    return info_kart(date_from,date_to)
-print(home_page('2021-12-19 20:13:13'))
+if __name__ == '__main__':
+    date_times = "2021-12-19 20:13:13"
+    print(home_page(date_times))
 
