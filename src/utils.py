@@ -75,6 +75,5 @@ def currency_rates():
     return result
 
 
-
 if __name__ == '__main__':
     print(date_filter("2021-12-01 23:50:13"))

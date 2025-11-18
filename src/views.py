@@ -40,6 +40,7 @@ def home_page(date_times:str) ->Dict[str,Any]:
 
     return json_data
 
+
 if __name__ == '__main__':
     date_times = "2021-12-02 20:13:13"
     print(home_page(date_times))
