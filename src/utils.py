@@ -110,13 +110,24 @@ def currency_rates() -> List[Dict]:
 
 
 def  stock_price():
-    url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=AAPL&interval=1min&apikey=60YWFSOQ1WL3XA2X'
-    url1 ='https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=AAPL&apikey=60YWFSOQ1WL3XA2X'
-    r = requests.get(url1)
-    data = r.json()
+    result = []
+    path_json = os.path.join('../data/user_settings.json')
+    with open(path_json) as json_file:
+        user_settings = json.load(json_file)
+        user_stocks = user_settings['user_stocks']
+    for row in user_stocks:
+        dict_result = {}
+        headers = {'apikey': '60YWFSOQ1WL3XA2X'}
+        url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=AAPL&interval=1min&apikey=60YWFSOQ1WL3XA2X'
+        url1 =f'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=AAPL&apikey={headers}'
+        r = requests.get(url1)
+        data = r.json()
+        dict_result["stock"] = row
+        dict_result['rates'] = round(data['Global Quote']['02. open'], 2)
+        result.append(dict_result)
 
-    return print(data)
+    return result
 
 if __name__ == '__main__':
-    stock_price()
+    print(stock_price())
     print(date_filter("2021-12-01 23:50:13"))
