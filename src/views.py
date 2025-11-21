@@ -17,6 +17,7 @@ def home_page(date_times:str) ->Dict[str,Any]:
     top_transactions = top5_transactions(date_excel_filter)
     currency_r = currency_rates()
 
+
     if 0 < hour < 5:
         greetings = 'Доброй ночи'
     elif 5 < hour < 11:
@@ -28,14 +29,15 @@ def home_page(date_times:str) ->Dict[str,Any]:
     data = {
         "greetings": greetings,
         "cards": cards,
-        "top_transactions": top_transactions
+        "top_transactions": top_transactions,
+        "currency_rates": currency_r,
     }
     json_data = json.dumps(data,ensure_ascii=False, indent=4)
-    date_excel_filter= date_filter(date_times)
-    kart = kart_info(date_excel_filter)
-    print('-'*10)
-    print(currency_r)
-    print('-'*10)
+    # date_excel_filter= date_filter(date_times)
+    # kart = kart_info(date_excel_filter)
+    # print('-'*10)
+    # print(currency_r)
+    # print('-'*10)
 
 
     return json_data
