@@ -92,6 +92,7 @@ def currency_rates() -> List[Dict]:
             dict_result = {}
             url = f"https://api.apilayer.com/exchangerates_data/latest?symbols=RUB&base={row}"
             payload = {}
+            # headers = {"apikey": os.getenv("APIKEY1")}
             headers = {"apikey": "Hzn1ZfOBV2bvKNQBCgsZW72APuJSZI72"}
             response = requests.request("GET", url, headers=headers, data=payload)
             response.raise_for_status()
@@ -102,32 +103,42 @@ def currency_rates() -> List[Dict]:
     except FileNotFoundError:
         logger.error('Файл с настройками пользователя не найден')
     except requests.exceptions.HTTPError:
-        logger.error('Ошибка связи с API')
+        logger.error(f'Ошибка связи с API Ошибка {response.status_code}')
     except json.decoder.JSONDecodeError:
         logger.error('Ошибка связи с API')
-
+    logger.info(f'Успешно получена информация от API по курсам валют {user_currencies}')
     return result
 
 
 def  stock_price():
-    result = []
-    path_json = os.path.join('../data/user_settings.json')
-    with open(path_json) as json_file:
-        user_settings = json.load(json_file)
-        user_stocks = user_settings['user_stocks']
-    for row in user_stocks:
-        dict_result = {}
-        headers = {'apikey': '60YWFSOQ1WL3XA2X'}
-        url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=AAPL&interval=1min&apikey=60YWFSOQ1WL3XA2X'
-        url1 =f'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=AAPL&apikey={headers}'
-        r = requests.get(url1)
-        data = r.json()
-        dict_result["stock"] = row
-        dict_result['rates'] = round(data['Global Quote']['02. open'], 2)
-        result.append(dict_result)
+    try:
+        result = []
+        path_json = os.path.join('../data/user_settings.json')
+        with open(path_json) as json_file:
+            user_settings = json.load(json_file)
+            user_stocks = user_settings['user_stocks']
+        for row in user_stocks:
+            dict_result = {}
+            headers_api = {"apikey": os.getenv("APIKEY2")}
+            # headers = {'apikey': '60YWFSOQ1WL3XA2X'}
+            url = 'https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=AAPL&interval=1min&apikey=60YWFSOQ1WL3XA2X'
+            url1 =f'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={row}&apikey={headers_api}'
+            r = requests.get(url1)
+            data = r.json()
+            dict_result["stock"] = row
+            dict_result['rates'] = data['Global Quote']['02. open']
+            result.append(dict_result)
+    except FileNotFoundError:
+            logger.error('Файл с настройками пользователя не найден')
+    except requests.exceptions.HTTPError:
+        logger.error(f'Ошибка связи с API Ошибка {response.status_code}')
+    except json.decoder.JSONDecodeError:
+        logger.error('Ошибка связи с API')
+    logger.info(f'Успешно получена информация от API по курсам валют {user_stocks}')
 
     return result
 
 if __name__ == '__main__':
+    print(currency_rates())
     print(stock_price())
     print(date_filter("2021-12-01 23:50:13"))

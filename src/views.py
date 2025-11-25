@@ -2,7 +2,7 @@ import datetime
 import json
 from typing import Any, Dict
 
-from src.utils import date_filter, kart_info, top5_transactions, currency_rates
+from src.utils import date_filter, kart_info, top5_transactions, currency_rates, stock_price
 
 
 def home_page(date_times:str) ->Dict[str,Any]:
@@ -16,6 +16,7 @@ def home_page(date_times:str) ->Dict[str,Any]:
     cards = kart_info(date_excel_filter)
     top_transactions = top5_transactions(date_excel_filter)
     currency_r = currency_rates()
+    stock_price_result = stock_price()
 
 
     if 0 < hour < 5:
@@ -31,6 +32,7 @@ def home_page(date_times:str) ->Dict[str,Any]:
         "cards": cards,
         "top_transactions": top_transactions,
         "currency_rates": currency_r,
+        "stock_price" : stock_price_result,
     }
     json_data = json.dumps(data,ensure_ascii=False, indent=4)
     # date_excel_filter= date_filter(date_times)
