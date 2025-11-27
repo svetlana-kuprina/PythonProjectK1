@@ -21,7 +21,7 @@ file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 
 
-def open_file() -> Any:
+def open_file() -> DataFrame:
     """Функция чтения excel файла"""
 
     try:
@@ -32,20 +32,24 @@ def open_file() -> Any:
     return excel_data
 
 
-def date_filter(date_times: str) -> DataFrame:
+def date_filter(date_times: str,excel_data) -> DataFrame:
     """Функция фильтрует данные excel файла по входящей дате с начала месяца."""
-
-    date_to = datetime.datetime.strptime(date_times, "%Y-%m-%d %H:%M:%S")
-    date_from = date_to.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
-    date_to_str = date_to.strftime("%Y-%m-%d %H:%M:%S")
-    date_from_str = date_from.strftime("%Y-%m-%d %H:%M:%S")
-    excel_data = open_file()
-    excel_data['Дата операции'] = pd.to_datetime(excel_data['Дата операции'], dayfirst=True)
-    excel_data_reviews = excel_data.loc[
-        (excel_data['Дата операции'] >= date_from_str) &
-        (excel_data['Дата операции'] <= date_to_str)]
-    sorted_excel_data = excel_data_reviews.sort_values(by='Дата операции', ascending=True)
-    logger.info('Успешный отбор по дате')
+    try:
+        date_to = datetime.datetime.strptime(date_times, "%Y-%m-%d %H:%M:%S")
+        date_from = date_to.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        date_to_str = date_to.strftime("%Y-%m-%d %H:%M:%S")
+        date_from_str = date_from.strftime("%Y-%m-%d %H:%M:%S")
+        # excel_data = open_file()
+        excel_data['Дата операции'] = pd.to_datetime(excel_data['Дата операции'], dayfirst=True)
+        excel_data_reviews = excel_data.loc[
+            (excel_data['Дата операции'] >= date_from_str) &
+            (excel_data['Дата операции'] <= date_to_str)]
+        sorted_excel_data = excel_data_reviews.sort_values(by='Дата операции', ascending=True)
+        logger.info('Успешный отбор по дате')
+    except ValueError:
+        logger.error('Не верный формат даты')
+    except KeyError:
+        logger.error('Данные файла operations.xlsx не соответствуют формату')
     return sorted_excel_data
 
 

@@ -1,40 +1,48 @@
 from unittest.mock import patch
 
 import pandas as pd
+from pandas import Timestamp
 
 from src.utils import date_filter
 
-@patch("pandas.read_excel")
-def test_date_filter(mock_df) -> None:
-    """Тест функции read_excel. Используется Mock и patch"""
 
-    read_data = pd.DataFrame(
-        {
-            "id": ["650703"],
-            "state": ["EXECUTED"],
-            "date": ["2023-09-05T11:30:32Z"],
-            "amount": ["16210"],
-            "currency_name": ["Sol"],
-            "currency_code": ["PEN"],
-            "from": ["Счет 58803664561298323391"],
-            "to": ["Счет 39745660563456619397"],
-            "description": ["Перевод организации"],
-        }
+def test_date_filter() -> None:
+    """Тест функции date_filter."""
+
+    read_data = pd.DataFrame({
+        "Дата операции": ["31.12.2021 16:44:00"],
+        "Дата платежа": ["31.12.2021"],
+        "Номер карты": ["*7197"],
+        "Статус": ["OK"],
+        "Сумма операции": [-160.89],
+        "Валюта операции": ["RUB"],
+        "Сумма платежа": [-160.89],
+        "Валюта платежа": ["RUB"],
+        "Кэшбэк": [""],
+        "Категория": ["Супермаркеты"],
+        "MCC": ["5411"],
+        "Описание": ["Колхоз"],
+        "Бонусы (включая кэшбэк)": [""],
+        "Округление на инвесткопилку": [0.00],
+        "Сумма операции с округлением": [160.89],
+    }
     )
-    mock_df.return_value = read_data
 
-    expected_result = [
-        {
-            "id": "650703",
-            "state": "EXECUTED",
-            "date": "2023-09-05T11:30:32Z",
-            "amount": "16210",
-            "currency_name": "Sol",
-            "currency_code": "PEN",
-            "from": "Счет 58803664561298323391",
-            "to": "Счет 39745660563456619397",
-            "description": "Перевод организации",
-        }
-    ]
-    result = date_filter("2021-12-01 23:50:13")
-    assert result == expected_result
+    expected_result = [{'MCC': '5411',
+                        'Бонусы (включая кэшбэк)': '',
+                        'Валюта операции': 'RUB',
+                        'Валюта платежа': 'RUB',
+                        'Дата операции': Timestamp('2021-12-31 16:44:00'),
+                        'Дата платежа': '31.12.2021',
+                        'Категория': 'Супермаркеты',
+                        'Кэшбэк': '',
+                        'Номер карты': '*7197',
+                        'Округление на инвесткопилку': 0.0,
+                        'Описание': 'Колхоз',
+                        'Статус': 'OK',
+                        'Сумма операции': -160.89,
+                        'Сумма операции с округлением': 160.89,
+                        'Сумма платежа': -160.89}]
+    result = date_filter("2021-12-31 23:59:59", read_data)
+    res = result.to_dict(orient="records")
+    assert res == expected_result

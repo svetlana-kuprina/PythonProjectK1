@@ -4,7 +4,7 @@ import logging
 import os
 from typing import Any, Dict
 
-from src.utils import date_filter, kart_info, top5_transactions, currency_rates, stock_price
+from src.utils import date_filter, kart_info, top5_transactions, currency_rates, stock_price, open_file
 
 logger = logging.getLogger("utils")
 logger.setLevel(logging.DEBUG)
@@ -21,7 +21,8 @@ def home_page(date_times: str) -> Dict[str, Any]:
 
     date_to = datetime.datetime.strptime(date_times, "%Y-%m-%d %H:%M:%S")
     hour = date_to.hour
-    date_excel_filter = date_filter(date_times)
+    excel_data_fr = open_file()
+    date_excel_filter = date_filter(date_times, excel_data_fr)
     cards = kart_info(date_excel_filter)
     top_transactions = top5_transactions(date_excel_filter)
     currency_r = currency_rates()
