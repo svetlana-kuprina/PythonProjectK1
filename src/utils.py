@@ -102,6 +102,7 @@ def currency_rates() -> List[Dict]:
             response = requests.get(url, headers=headers, data=payload)
             response.raise_for_status()
             response_data = response.json()
+            print(response_data)
             dict_result["currency"] = row
             dict_result['rates'] = round(response_data['rates']['RUB'], 2)
             result.append(dict_result)
@@ -148,5 +149,5 @@ def stock_price():
 
 if __name__ == '__main__':
     print(currency_rates())
-    print(stock_price())
+    # print(stock_price())
     print(date_filter("2021-12-01 23:50:13"))
