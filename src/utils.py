@@ -2,7 +2,7 @@ import datetime
 import json
 import logging
 import os
-from typing import Any, List, Dict
+from typing import List, Dict
 from venv import logger
 
 import pandas as pd
@@ -25,31 +25,32 @@ def open_file() -> DataFrame:
     """Функция чтения excel файла"""
 
     try:
-        excel_data = pd.read_excel('../data/operations.xlsx', sheet_name='Отчет по операциям')
-        logger.info('Успешное чтение файла excel')
+        excel_data = pd.read_excel("../data/operations.xlsx", sheet_name="Отчет по операциям")
+        logger.info("Успешное чтение файла excel")
     except FileNotFoundError:
-        logger.error('Файл с настройками пользователя не найден')
+        logger.error("Файл с настройками пользователя не найден")
     return excel_data
 
 
-def date_filter(date_times: str,excel_data) -> DataFrame:
+def date_filter(date_times: str, excel_data) -> DataFrame:
     """Функция фильтрует данные excel файла по входящей дате с начала месяца."""
+
     try:
         date_to = datetime.datetime.strptime(date_times, "%Y-%m-%d %H:%M:%S")
         date_from = date_to.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
         date_to_str = date_to.strftime("%Y-%m-%d %H:%M:%S")
         date_from_str = date_from.strftime("%Y-%m-%d %H:%M:%S")
         # excel_data = open_file()
-        excel_data['Дата операции'] = pd.to_datetime(excel_data['Дата операции'], dayfirst=True)
+        excel_data["Дата операции"] = pd.to_datetime(excel_data["Дата операции"], dayfirst=True)
         excel_data_reviews = excel_data.loc[
-            (excel_data['Дата операции'] >= date_from_str) &
-            (excel_data['Дата операции'] <= date_to_str)]
-        sorted_excel_data = excel_data_reviews.sort_values(by='Дата операции', ascending=True)
-        logger.info('Успешный отбор по дате')
+            (excel_data["Дата операции"] >= date_from_str) & (excel_data["Дата операции"] <= date_to_str)
+            ]
+        sorted_excel_data = excel_data_reviews.sort_values(by="Дата операции", ascending=True)
+        logger.info("Успешный отбор по дате")
     except ValueError:
-        logger.error('Не верный формат даты')
+        logger.error("Не верный формат даты")
     except KeyError:
-        logger.error('Данные файла operations.xlsx не соответствуют формату')
+        logger.error("Данные файла operations.xlsx не соответствуют формату")
     return sorted_excel_data
 
 
@@ -57,16 +58,16 @@ def kart_info(date_fl: DataFrame) -> List[Dict]:
     """Функция формирует данные excel файла в формате: последние 4 цифры карты; общая сумма расходов; кешбэк."""
 
     result = []
-    fdate_fl = date_fl.fillna('---')
+    fdate_fl = date_fl.fillna("---")
 
     for index, row in fdate_fl.iterrows():
-        if row['Сумма операции'] < 0:
-            total_spent = row['Сумма операции с округлением']
-            last_digits = str(row['Номер карты'])
-            cashback = row['Кэшбэк']
-            dict_kart = {'last_digits': last_digits[1:], 'total_spent': total_spent, 'cashback': cashback}
+        if row["Сумма операции"] < 0:
+            total_spent = row["Сумма операции с округлением"]
+            last_digits = str(row["Номер карты"])
+            cashback = row["Кэшбэк"]
+            dict_kart = {"last_digits": last_digits[1:], "total_spent": total_spent, "cashback": cashback}
             result.append(dict_kart)
-    logger.info('Успешный вывод данных по операциям')
+    logger.info("Успешный вывод данных по операциям")
     return result
 
 
@@ -74,14 +75,16 @@ def top5_transactions(date_fl: DataFrame) -> List[Dict]:
     """Функция Топ-5 транзакций по сумме платежа."""
 
     result = []
-    date_fl.sort_values(by='Сумма платежа', ascending=True, inplace=True)
+    date_fl.sort_values(by="Сумма платежа", ascending=True, inplace=True)
     for index, row in date_fl[0:5].iterrows():
-        dict_top_tr = {"date": row['Дата платежа'],
-                       "amount": row['Сумма операции с округлением'],
-                       "category": row['Категория'],
-                       "description": row['Описание']}
+        dict_top_tr = {
+            "date": row["Дата платежа"],
+            "amount": row["Сумма операции с округлением"],
+            "category": row["Категория"],
+            "description": row["Описание"],
+        }
         result.append(dict_top_tr)
-    logger.info('Успешный вывод данных Топ-5 транзакций')
+    logger.info("Успешный вывод данных Топ-5 транзакций")
     return result
 
 
@@ -90,10 +93,10 @@ def currency_rates() -> List[Dict]:
 
     try:
         result = []
-        path_json = os.path.join('../data/user_settings.json')
+        path_json = os.path.join("../data/user_settings.json")
         with open(path_json) as json_file:
             user_settings = json.load(json_file)
-            user_currencies = user_settings['user_currencies']
+            user_currencies = user_settings["user_currencies"]
         for row in user_currencies:
             dict_result = {}
             url = f"https://api.apilayer.com/exchangerates_data/latest?symbols=RUB&base={row}"
@@ -104,50 +107,52 @@ def currency_rates() -> List[Dict]:
             response_data = response.json()
             print(response_data)
             dict_result["currency"] = row
-            dict_result['rates'] = round(response_data['rates']['RUB'], 2)
+            dict_result["rates"] = round(response_data["rates"]["RUB"], 2)
             result.append(dict_result)
     except FileNotFoundError:
-        logger.error('Файл с настройками пользователя не найден')
+        logger.error("Файл с настройками пользователя не найден")
     except requests.exceptions.HTTPError:
-        logger.error(f'Ошибка связи с API Ошибка {response.status_code}')
+        logger.error(f"Ошибка связи с API Ошибка {response.status_code}")
     except json.decoder.JSONDecodeError:
-        logger.error('Ошибка связи с API')
+        logger.error("Ошибка связи с API")
     return result
 
 
 def stock_price():
-    """Функция запроса Стоимости акций из S&P500 по настройкам пользовательского файла """
+    """Функция запроса Стоимости акций из S&P500 по настройкам пользовательского файла"""
 
     try:
         result = []
-        path_json = os.path.join('../data/user_settings.json')
+        path_json = os.path.join("../data/user_settings.json")
         with open(path_json) as json_file:
             user_settings = json.load(json_file)
-            user_stocks = user_settings['user_stocks']
+            user_stocks = user_settings["user_stocks"]
         for row in user_stocks:
             dict_result = {}
             headers_api = {"apikey": os.getenv("APIKEY2")}
-            url1 = f'https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={row}&apikey={headers_api}'
+            url1 = f"https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol={row}&apikey={headers_api}"
             r = requests.get(url1)
             r.raise_for_status()
             data = r.json()
             dict_result["stock"] = row
-            dict_result['rates'] = data['Global Quote']['02. open']
+            dict_result["rates"] = data["Global Quote"]["02. open"]
             result.append(dict_result)
     except FileNotFoundError:
-        logger.error('Файл с настройками пользователя не найден')
+        logger.error("Файл с настройками пользователя не найден")
     except requests.exceptions.HTTPError:
-        logger.error(f'Ошибка связи с API Ошибка {r.status_code}')
+        logger.error(f"Ошибка связи с API Ошибка {r.status_code}")
     except json.decoder.JSONDecodeError:
-        logger.error('Ошибка связи с API')
+        logger.error("Ошибка связи с API")
     except KeyError:
         logger.error(
-'Возможно закончился лимит подключения к API. Проверьте возможность подключения на сайте https://www.alphavantage.co/')
+            "Возможно закончился лимит подключения к API."
+            " Проверьте возможность подключения на сайте https://www.alphavantage.co/"
+        )
 
     return result
-
-
-if __name__ == '__main__':
-    print(currency_rates())
-    # print(stock_price())
-    print(date_filter("2021-12-01 23:50:13"))
+#
+#
+# if __name__ == "__main__":
+#     print(currency_rates())
+#     # print(stock_price())
+#     print(date_filter("2021-12-01 23:50:13"))
