@@ -15,7 +15,7 @@ file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 
 
-def home_page(date_times: str) -> Dict[str, Any]:
+def home_page(date_times: str) -> json:
     """Функция формирует JSON файл с данными для главной страницы.
     Принимает на вход строку с датой и временем открытия, типа 2021-12-19 20:13:13"""
 

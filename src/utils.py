@@ -152,7 +152,8 @@ def stock_price():
     return result
 #
 #
-# if __name__ == "__main__":
-#     print(currency_rates())
-#     # print(stock_price())
-#     print(date_filter("2021-12-01 23:50:13"))
+if __name__ == "__main__":
+   ex = open_file()
+   dict_l = date_filter("2021-11-30 23:50:13",ex)
+   print(dict_l)
+   print(kart_info(dict_l))
