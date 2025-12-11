@@ -51,8 +51,8 @@ def home_page(date_times: str) -> json:
     except Exception as ex:
         logger.error(f"Ошибка {ex}")
     return json_data
-#
-#
-# if __name__ == "__main__":
-#     date_times = "2021-12-02 20:13:13"
-#     print(home_page(date_times))
+
+
+if __name__ == "__main__":
+    date_times = "2021-12-02 20:13:13"
+    print(home_page(date_times))

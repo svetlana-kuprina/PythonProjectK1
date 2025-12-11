@@ -25,10 +25,11 @@ def open_file() -> DataFrame:
     """Функция чтения excel файла"""
 
     try:
-        excel_data = pd.read_excel("../data/operations.xlsx", sheet_name="Отчет по операциям")
+        path_file = os.path.join(os.path.dirname(__file__), "../data", "operations.xlsx")
+        excel_data = pd.read_excel(path_file, sheet_name="Отчет по операциям")
         logger.info("Успешное чтение файла excel")
     except FileNotFoundError:
-        logger.error("Файл с настройками пользователя не найден")
+        logger.error("Файл с транзакциями не найден")
     return excel_data
 
 
@@ -44,7 +45,7 @@ def date_filter(date_times: str, excel_data) -> DataFrame:
         excel_data["Дата операции"] = pd.to_datetime(excel_data["Дата операции"], dayfirst=True)
         excel_data_reviews = excel_data.loc[
             (excel_data["Дата операции"] >= date_from_str) & (excel_data["Дата операции"] <= date_to_str)
-            ]
+        ]
         sorted_excel_data = excel_data_reviews.sort_values(by="Дата операции", ascending=True)
         logger.info("Успешный отбор по дате")
     except ValueError:
@@ -150,10 +151,10 @@ def stock_price():
         )
 
     return result
-#
-#
+
+
 if __name__ == "__main__":
-   ex = open_file()
-   dict_l = date_filter("2021-11-30 23:50:13",ex)
-   print(dict_l)
-   print(kart_info(dict_l))
+    ex = open_file()
+    dict_l = date_filter("2021-11-30 23:50:13", ex)
+    print(dict_l)
+    print(kart_info(dict_l))
