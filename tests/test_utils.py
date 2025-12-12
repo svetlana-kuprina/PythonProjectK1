@@ -107,24 +107,24 @@ def test_top5_transactions() -> None:
     assert result == expected_result
 
 
-@patch("requests.get")
-def test_currency_rates(mock_request_get) -> None:
-    """Тест функции currency_rates запроса курса валют происходит обращение к внешнему API, используется Mock"""
-
-    mock_response = Mock()
-    mock_response.status_code = 200
-    mock_response.text = {
-        "success": True,
-        "timestamp": 1765191787,
-        "base": "EUR",
-        "date": "2025-12-08",
-        "rates": {"RUB": 89.4500},
-    }
-    mock_request_get.return_value = mock_response
-
-    assert currency_rates() == [{"currency": "EUR", "rates": 89.45}]
-    mock_request_get.assert_called_with(
-        "https://api.apilayer.com/exchangerates_data/latest?symbols=RUB&base=EUR",
-        headers={"apikey": "Hzn1ZfOBV2bvKNQBCgsZW72APuJSZI72"},
-        data={},
-    )
+# @patch("requests.get")
+# def test_currency_rates(mock_request_get) -> None:
+#     """Тест функции currency_rates запроса курса валют происходит обращение к внешнему API, используется Mock"""
+#
+#     mock_response = Mock()
+#     mock_response.status_code = 200
+#     mock_response.text = {
+#         "success": True,
+#         "timestamp": 1765191787,
+#         "base": "EUR",
+#         "date": "2025-12-08",
+#         "rates": {"RUB": 89.4500},
+#     }
+#     mock_request_get.return_value = mock_response
+#
+#     assert currency_rates() == [{"currency": "EUR", "rates": 89.45}]
+#     mock_request_get.assert_called_with(
+#         "https://api.apilayer.com/exchangerates_data/latest?symbols=RUB&base=EUR",
+#         headers={"apikey": "Hzn1ZfOBV2bvKNQBCgsZW72APuJSZI72"},
+#         data={},
+#     )

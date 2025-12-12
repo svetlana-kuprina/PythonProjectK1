@@ -1,9 +1,9 @@
-from src.reports import spending_by_category
+from src.reports import spending_by_category, decorator_save_file
 from src.services import search_by_phone_numbers
 from src.utils import open_file
 
 if __name__ == "__main__":
+
     ex = open_file()
     dict_list = ex.to_dict(orient="records")
-    print(spending_by_category(ex, 'Супермаркеты','2018-01-10 00:00:00'))
-
+    print(spending_by_category(ex, "Супермаркеты", "2018-01-10 00:00:00"))
