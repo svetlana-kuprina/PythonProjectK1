@@ -2,10 +2,13 @@ import os
 
 import pandas as pd
 
+from main import ex
 from src.reports import spending_by_category
 
 
-def test_spending_by_category():
+def test_spending_by_category() -> None:
+    """Тест функции spending_by_category"""
+
     ex = pd.DataFrame(
         {
             "Дата операции": ["2018-01-01 00:00:00"],
@@ -35,5 +38,11 @@ def test_spending_by_category():
         'округлением":160.89}]'
     )
     file_dir = os.path.join(os.path.dirname(__file__), "../data", "report.json")
-    with open(file_dir, "r") as file:
+    with open(file_dir, "r", encoding="utf-8") as file:
         assert file.read() == expected
+
+
+def test_spending_by_category_error() -> None:
+    """Тест функции spending_by_category на передачу нестандартных параметров (например не верный формат даты)"""
+
+    assert spending_by_category(ex, "Супермаркеты", "2018-01-10") == None

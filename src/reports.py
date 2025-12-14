@@ -64,6 +64,12 @@ def spending_by_category(transactions: pd.DataFrame, category: str, date: Option
         logger.info(f"Сделан отбор по категории {category}")
 
     except ValueError:
-        logger.error("Ошибка входных данных.")
+        logger.error(
+            "Ошибка входных данных. Ошибка: ValueError" "Не верный формат даты Формат даты: ГГГГ-ММ-ДД ЧЧ:ММ:СС."
+        )
+        return pd.DataFrame()
+    except Exception as e:
+        logger.error(f"Ошибка входных данных. Ошибка {e} ")
+        return pd.DataFrame()
 
     return data_for_category

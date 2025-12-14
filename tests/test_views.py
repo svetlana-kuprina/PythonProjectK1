@@ -1,9 +1,9 @@
-import json
-from unittest.mock import patch
-
-from src.views import home_page
-
-
+# import json
+# from unittest.mock import patch
+#
+# from src.views import home_page
+#
+#
 # @patch("currency_r, stock_price_result")
 # def test_home_page(mock_currency_r, mock_stock_price_result):
 #

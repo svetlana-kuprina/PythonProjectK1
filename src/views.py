@@ -2,9 +2,16 @@ import datetime
 import json
 import logging
 import os
-from typing import Any, Dict
 
-from src.utils import date_filter, kart_info, top5_transactions, currency_rates, stock_price, open_file
+from src.utils import (
+    date_filter,
+    kart_info,
+    top5_transactions,
+    currency_rates,
+    stock_price,
+    open_file,
+    open_user_settings,
+)
 
 logger = logging.getLogger("utils")
 logger.setLevel(logging.DEBUG)
@@ -23,11 +30,13 @@ def home_page(date_times: str) -> json:
         date_to = datetime.datetime.strptime(date_times, "%Y-%m-%d %H:%M:%S")
         hour = date_to.hour
         excel_data_fr = open_file()
+        user_settings = open_user_settings()
         date_excel_filter = date_filter(date_times, excel_data_fr)
         cards = kart_info(date_excel_filter)
         top_transactions = top5_transactions(date_excel_filter)
-        currency_r = currency_rates()
-        stock_price_result = stock_price()
+        currency_r = currency_rates(user_settings)
+        stock_price_result = stock_price(user_settings)
+
         if stock_price_result != [] or currency_r != []:
             logger.info("Успешно получена информация от API по курсам валют и акциям")
 
@@ -50,9 +59,5 @@ def home_page(date_times: str) -> json:
         logger.info("Успешно сформирован JSON-ответ")
     except Exception as ex:
         logger.error(f"Ошибка {ex}")
+        return []
     return json_data
-
-
-if __name__ == "__main__":
-    date_times = "2021-12-02 20:13:13"
-    print(home_page(date_times))
