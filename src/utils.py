@@ -99,6 +99,8 @@ def top5_transactions(date_fl: DataFrame) -> List[Dict]:
 
 
 def open_user_settings():
+    """Функция чтения файла настроек пользователя"""
+
     try:
         path_json = os.path.join(os.path.dirname(__file__), "../data", "user_settings.json")
         with open(path_json) as json_file:
